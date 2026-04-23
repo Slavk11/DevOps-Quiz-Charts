@@ -1,0 +1,118 @@
+dependencies:
+  nats:
+    enabled: true
+    image:
+      repository: nats
+      tag: "latest"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    containerPort: 4222
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 4222
+      targetPort: 4222
+    env: []
+    resources: {}
+
+  redis:
+    enabled: true
+    image:
+      repository: redis
+      tag: "latest"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    containerPort: 6379
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 6379
+      targetPort: 6379
+    env: []
+    resources: {}
+
+  consul:
+    enabled: true
+    image:
+      repository: consul
+      tag: "latest"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    containerPort: 8500
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 8500
+      targetPort: 8500
+    env: []
+    resources: {}
+
+  mailhog:
+    enabled: true
+    image:
+      repository: mailhog/mailhog
+      tag: "latest"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    containerPort: 1025
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 1025
+      targetPort: 1025
+    env: []
+    resources: {}
+
+  microapi:
+    enabled: true
+    image:
+      repository: ""
+      tag: "latest"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    containerPort: 8080
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 8080
+      targetPort: 8080
+    env:
+      - name: MICRO_REGISTRY
+        value: consul
+      - name: MICRO_REGISTRY_ADDRESS
+        value: consul:8500
+      - name: MICRO_CLIENT_REQUEST_TIMEOUT
+        value: 30s
+    resources: {}
+
+  imageproxy:
+    enabled: true
+    image:
+      repository: ""
+      tag: "latest"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    containerPort: 8080
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 8080
+      targetPort: 8080
+    env: []
+    resources: {}
+
+  chrome:
+    enabled: true
+    image:
+      repository: ""
+      tag: "latest"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    containerPort: 3000
+    service:
+      enabled: false
+      type: ClusterIP
+      port: 3000
+      targetPort: 3000
+    env: []
+    resources: {}
