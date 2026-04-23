@@ -1,0 +1,26 @@
+image:
+  repository: cr.yandex/<registry-id>/show
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+containerPort: 8080
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: nginx
+  host: show.hex-server.site
+  path: /
+  pathType: Prefix
+  tls:
+    enabled: true
+    secretName: show-hex-server-site-tls
+
+env: []
+resources: {}
