@@ -1,0 +1,13 @@
+image:
+  repository: cr.yandex/<registry-id>/users
+  tag: "latest"
+
+containerPort: 8080
+
+service:
+  enabled: false
+
+ingress:
+  enabled: false
+
+env: []
