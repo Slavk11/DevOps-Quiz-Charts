@@ -4,17 +4,19 @@ image:
   pullPolicy: IfNotPresent
 
 replicaCount: 1
-containerPort: 8080
+containerPort: 6050
 
 service:
   enabled: true
   type: ClusterIP
   port: 80
-  targetPort: 8080
+  targetPort: 6050
 
 ingress:
   enabled: true
   className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
   host: show.hex-server.site
   path: /
   pathType: Prefix
@@ -24,6 +26,6 @@ ingress:
 
 env:
   - name: MICRO_SERVER_ADDRESS
-    value: 0.0.0.0:8080
+    value: 0.0.0.0:6050
 
 resources: {}
