@@ -102,9 +102,9 @@ dependencies:
     resources: {}
 
   chrome:
-    enabled: false
+    enabled: true
     image:
-      repository: ""
+      repository: cr.yandex/crpd87adl3oop0ieiuk7/chrome
       tag: "latest"
       pullPolicy: IfNotPresent
     replicaCount: 1
