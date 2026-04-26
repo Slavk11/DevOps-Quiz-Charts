@@ -34,8 +34,8 @@ dependencies:
   consul:
     enabled: true
     image:
-      repository: consul
-      tag: "latest"
+      repository: hashicorp/consul
+      tag: "1.21"
       pullPolicy: IfNotPresent
     replicaCount: 1
     containerPort: 8500
