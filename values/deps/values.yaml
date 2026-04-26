@@ -108,11 +108,11 @@ dependencies:
       tag: "latest"
       pullPolicy: IfNotPresent
     replicaCount: 1
-    containerPort: 3000
+    containerPort: 9222
     service:
       enabled: false
       type: ClusterIP
-      port: 3000
-      targetPort: 3000
+      port: 9222
+      targetPort: 9222
     env: []
     resources: {}
