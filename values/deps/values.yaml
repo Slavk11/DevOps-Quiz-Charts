@@ -86,10 +86,10 @@ dependencies:
     resources: {}
 
   imageproxy:
-    enabled: false
+    enabled: true
     image:
-      repository: ""
-      tag: "latest"
+      repository: ghcr.io/willnorris/imageproxy
+      tag: "main"
       pullPolicy: IfNotPresent
     replicaCount: 1
     containerPort: 8080
