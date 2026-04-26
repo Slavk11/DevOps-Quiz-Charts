@@ -86,7 +86,7 @@ dependencies:
     resources: {}
 
   imageproxy:
-    enabled: true
+    enabled: false
     image:
       repository: ""
       tag: "latest"
@@ -102,7 +102,7 @@ dependencies:
     resources: {}
 
   chrome:
-    enabled: true
+    enabled: false
     image:
       repository: ""
       tag: "latest"

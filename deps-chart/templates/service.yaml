@@ -3,11 +3,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
+  name: {{ $name }}
 spec:
   type: {{ $dep.service.type }}
   selector:
-    app: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
+    app: {{ $name }}
   ports:
     - port: {{ $dep.service.port }}
       targetPort: {{ $dep.service.targetPort }}

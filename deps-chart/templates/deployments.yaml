@@ -3,16 +3,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
+  name: {{ $name }}
 spec:
   replicas: {{ $dep.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
+      app: {{ $name }}
   template:
     metadata:
       labels:
-        app: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
+        app: {{ $name }}
     spec:
       containers:
         - name: {{ $name }}
