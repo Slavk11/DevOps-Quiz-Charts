@@ -1,0 +1,33 @@
+image:
+  repository: cr.yandex/crpd87adl3oop0ieiuk7/leads
+  tag: "v1"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+containerPort: 8080
+
+service:
+  enabled: false
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  className: nginx
+  host: ""
+  path: /
+  pathType: Prefix
+  tls:
+    enabled: false
+    secretName: ""
+
+env:
+  - name: CONSUL_HTTP_ADDR
+    value: http://consul:8500
+  - name: MICRO_SERVER_ADDRESS
+    value: 0.0.0.0:8080
+  - name: MAJOR_DOMAIN
+    value: https://app.devops-quiz.com
+
+resources: {}
