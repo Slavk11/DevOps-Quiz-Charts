@@ -18,16 +18,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.containerPort }}
-          env:
-            - name: MICRO_REGISTRY
-              value: "consul"
-            - name: MICRO_REGISTRY_ADDRESS
-              value: "consul:8500"
-            - name: MICRO_TRANSPORT
-              value: "nats"
-            - name: MICRO_TRANSPORT_ADDRESS
-              value: "nats:4222"
 {{- with .Values.env }}
+          env:
 {{ toYaml . | nindent 12 }}
 {{- end }}
 {{- with .Values.resources }}
