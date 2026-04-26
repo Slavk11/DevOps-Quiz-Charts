@@ -1,33 +1,36 @@
-{{- range $name, $dep := .Values.dependencies }}
-{{- if $dep.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $name }}
+  name: {{ include "service-chart.fullname" . }}
 spec:
-  replicas: {{ $dep.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ $name }}
+      app: {{ include "service-chart.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ $name }}
+        app: {{ include "service-chart.fullname" . }}
     spec:
       containers:
-        - name: {{ $name }}
-          image: "{{ $dep.image.repository }}:{{ $dep.image.tag }}"
-          imagePullPolicy: {{ $dep.image.pullPolicy }}
+        - name: {{ include "service-chart.fullname" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ $dep.containerPort }}
-{{- with $dep.env }}
+            - containerPort: {{ .Values.containerPort }}
           env:
+            - name: MICRO_REGISTRY
+              value: "consul"
+            - name: MICRO_REGISTRY_ADDRESS
+              value: "consul:8500"
+            - name: MICRO_TRANSPORT
+              value: "nats"
+            - name: MICRO_TRANSPORT_ADDRESS
+              value: "nats:4222"
+{{- with .Values.env }}
 {{ toYaml . | nindent 12 }}
 {{- end }}
-{{- with $dep.resources }}
+{{- with .Values.resources }}
           resources:
 {{ toYaml . | nindent 12 }}
-{{- end }}
----
-{{- end }}
 {{- end }}

@@ -23,10 +23,6 @@ ingress:
     secretName: ""
 
 env:
-  - name: MICRO_REGISTRY
-    value: consul
-  - name: MICRO_REGISTRY_ADDRESS
-    value: consul:8500
   - name: CONSUL_HTTP_ADDR
     value: http://consul:8500
   - name: MICRO_SERVER_ADDRESS
