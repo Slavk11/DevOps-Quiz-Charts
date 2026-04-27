@@ -1,6 +1,6 @@
 image:
   repository: cr.yandex/crpd87adl3oop0ieiuk7/land
-  tag: "v1"
+  tag: "v2"
   pullPolicy: IfNotPresent
 
 replicaCount: 1

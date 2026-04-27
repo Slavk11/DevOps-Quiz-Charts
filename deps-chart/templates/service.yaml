@@ -1,16 +1,16 @@
 {{- range $name, $dep := .Values.dependencies }}
 {{- if and $dep.enabled $dep.service.enabled }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $name }}
+  name: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
 spec:
   type: {{ $dep.service.type }}
   selector:
-    app: {{ $name }}
+    app: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
   ports:
     - port: {{ $dep.service.port }}
       targetPort: {{ $dep.service.targetPort }}
----
 {{- end }}
 {{- end }}

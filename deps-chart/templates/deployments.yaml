@@ -1,36 +1,33 @@
+{{- range $name, $dep := .Values.dependencies }}
+{{- if $dep.enabled }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "service-chart.fullname" . }}
+  name: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ $dep.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "service-chart.fullname" . }}
+      app: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
   template:
     metadata:
       labels:
-        app: {{ include "service-chart.fullname" . }}
+        app: {{ include "deps-chart.dependencyFullname" (dict "context" $ "name" $name) }}
     spec:
       containers:
-        - name: {{ include "service-chart.fullname" . }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: {{ $name }}
+          image: "{{ $dep.image.repository }}:{{ $dep.image.tag }}"
+          imagePullPolicy: {{ $dep.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.containerPort }}
+            - containerPort: {{ $dep.containerPort }}
+{{- with $dep.env }}
           env:
-            - name: MICRO_REGISTRY
-              value: "consul"
-            - name: MICRO_REGISTRY_ADDRESS
-              value: "consul:8500"
-            - name: MICRO_TRANSPORT
-              value: "nats"
-            - name: MICRO_TRANSPORT_ADDRESS
-              value: "nats:4222"
-{{- with .Values.env }}
 {{ toYaml . | nindent 12 }}
 {{- end }}
-{{- with .Values.resources }}
+{{- with $dep.resources }}
           resources:
 {{ toYaml . | nindent 12 }}
+{{- end }}
+{{- end }}
 {{- end }}
