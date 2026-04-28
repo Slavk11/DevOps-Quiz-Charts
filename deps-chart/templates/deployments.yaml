@@ -1,0 +1,33 @@
+{{- range $name, $dep := .Values.dependencies }}
+{{- if $dep.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+spec:
+  replicas: {{ $dep.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+    spec:
+      containers:
+        - name: {{ $name }}
+          image: "{{ $dep.image.repository }}:{{ $dep.image.tag }}"
+          imagePullPolicy: {{ $dep.image.pullPolicy }}
+          ports:
+            - containerPort: {{ $dep.containerPort }}
+{{- with $dep.env }}
+          env:
+{{ toYaml . | nindent 12 }}
+{{- end }}
+{{- with $dep.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,28 @@
+image:
+  repository: cr.yandex/crpd87adl3oop0ieiuk7/land
+  tag: "v2"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+containerPort: 80
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  host: land.hex-server.site
+  path: /
+  pathType: Prefix
+  tls:
+    enabled: true
+    secretName: land-hex-server-site-tls
+
+env: []
+resources: {}

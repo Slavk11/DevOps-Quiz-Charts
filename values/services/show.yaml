@@ -1,0 +1,31 @@
+image:
+  repository: cr.yandex/crpd87adl3oop0ieiuk7/show
+  tag: "v1"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+containerPort: 6050
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 6050
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  host: show.hex-server.site
+  path: /
+  pathType: Prefix
+  tls:
+    enabled: true
+    secretName: show-hex-server-site-tls
+
+env:
+  - name: MICRO_SERVER_ADDRESS
+    value: 0.0.0.0:6050
+
+resources: {}
