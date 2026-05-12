@@ -25,4 +25,20 @@ ingress:
 
 env: []
 
+healthcheck:
+  enabled: true
+  port: 8081
+  liveness:
+    path: /healthz
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+  readiness:
+    path: /readyz
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+
 resources: {}

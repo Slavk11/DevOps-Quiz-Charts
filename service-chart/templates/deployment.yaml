@@ -17,12 +17,33 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.containerPort }}
-{{- with .Values.env }}
-          env:
-{{ toYaml . | nindent 12 }}
-{{- end }}
-{{- with .Values.resources }}
-          resources:
-{{ toYaml . | nindent 12 }}
-{{- end }}
+            - name: app
+              containerPort: {{ .Values.containerPort }}
+            {{- if .Values.healthcheck.enabled }}
+            - name: health
+              containerPort: {{ .Values.healthcheck.port }}
+            {{- end }}
+          {{- with .Values.env }}
+          env: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.healthcheck.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthcheck.liveness.path }}
+              port: {{ .Values.healthcheck.port }}
+            initialDelaySeconds: {{ .Values.healthcheck.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthcheck.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthcheck.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthcheck.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthcheck.readiness.path }}
+              port: {{ .Values.healthcheck.port }}
+            initialDelaySeconds: {{ .Values.healthcheck.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthcheck.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthcheck.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthcheck.readiness.failureThreshold }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources: {{ toYaml . | nindent 12 }}
+          {{- end }}
