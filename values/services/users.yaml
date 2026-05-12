@@ -27,5 +27,13 @@ env:
     value: http://consul:8500
   - name: MICRO_SERVER_ADDRESS
     value: 0.0.0.0:8080
+  - name: BASE_DOMAIN
+    value: "hex-server.site"
+  - name: PAYMENT_SHOP_ID
+    value: ""
+  - name: PAYMENT_SECRET_KEY
+    value: ""
+  - name: PAYMENT_URL
+    value: ""
 
 resources: {}

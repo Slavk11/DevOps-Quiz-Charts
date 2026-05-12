@@ -27,5 +27,19 @@ ingress:
 env:
   - name: MICRO_SERVER_ADDRESS
     value: 0.0.0.0:8080
+  - name: STORAGE_URL
+    value: "https://storage.yandexcloud.net"
+  - name: S3_BUCKET_QUIZ
+    value: "infra-project-hex-user-uploads"
+  - name: S3_BUCKET_LEAD
+    value: "infra-project-hex-media"
+  - name: S3_BUCKET_PREVIEW
+    value: "infra-project-hex-thumbnails"
+  - name: SHOW_URL
+    value: "https://show.hex-server.site"
+  - name: S3_ACCESS_KEY
+    value: "YCAJEptfUAdAu1gpQgPeDabP_"
+  - name: S3_SECRET_KEY
+    value: "YCOJv0MQfFpvxADT4HgY-QVNfn2hZY9vDepxf6jI"
 
 resources: {}

@@ -27,5 +27,19 @@ env:
     value: http://consul:8500
   - name: MICRO_SERVER_ADDRESS
     value: 0.0.0.0:8080
+  - name: SMTP_HOST
+    value: ""
+  - name: SMTP_PORT
+    value: "587"
+  - name: SMTP_USER
+    value: ""
+  - name: SMTP_PASSWORD
+    value: ""
+  - name: EMAIL_FROM_ADDR
+    value: "info@hex-server.site"
+  - name: EMAIL_HELO_HOST
+    value: "sender.hex-server.site"
+  - name: MAIL_PREFS_URL
+    value: "https://mailprefs.hex-server.site"
 
 resources: {}
