@@ -37,9 +37,19 @@ env:
     value: "infra-project-hex-thumbnails"
   - name: SHOW_URL
     value: "https://show.hex-server.site"
+  # S3 credentials sourced from Vault via External Secrets Operator.
+  # See:
+  #   infra/external-secrets/external-secrets/uploader.yaml (ExternalSecret manifest)
+  #   infra/vault/values.yaml (Vault dev-mode setup)
   - name: S3_ACCESS_KEY
-    value: "YCAJEptfUAdAu1gpQgPeDabP_"
+    valueFrom:
+      secretKeyRef:
+        name: uploader-vault-secrets
+        key: S3_ACCESS_KEY
   - name: S3_SECRET_KEY
-    value: "YCOJv0MQfFpvxADT4HgY-QVNfn2hZY9vDepxf6jI"
+    valueFrom:
+      secretKeyRef:
+        name: uploader-vault-secrets
+        key: S3_SECRET_KEY
 
 resources: {}
