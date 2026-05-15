@@ -25,6 +25,13 @@ ingress:
 
 env: []
 
+# Optional per-release ServiceAccount. When create=true, the chart
+# creates a ServiceAccount named {{ release-fullname }} and binds it
+# to the pod via serviceAccountName. When false, the pod uses the
+# namespace's default ServiceAccount.
+serviceAccount:
+  create: false
+
 healthcheck:
   enabled: true
   port: 8081
