@@ -12,6 +12,9 @@ spec:
       labels:
         app: {{ include "service-chart.fullname" . }}
     spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "service-chart.fullname" . }}
+      {{- end }}
       containers:
         - name: {{ include "service-chart.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
