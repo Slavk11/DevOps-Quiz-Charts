@@ -26,5 +26,3 @@ ingress:
 
 env: []
 resources: {}
-deployment:
-  enabled: true

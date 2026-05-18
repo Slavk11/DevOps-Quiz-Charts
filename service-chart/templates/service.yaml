@@ -2,14 +2,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ default (include "service-chart.fullname" .) .Values.service.nameOverride }}
+  name: {{ include "service-chart.fullname" . }}
 spec:
   type: {{ .Values.service.type }}
   selector:
-    app: {{ default (include "service-chart.fullname" .) .Values.appLabel }}
-    {{- with .Values.service.versionSelector }}
-    version: {{ . | quote }}
-    {{- end }}
+    app: {{ include "service-chart.fullname" . }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}

@@ -37,5 +37,3 @@ env:
     value: ""
 
 resources: {}
-deployment:
-  enabled: true

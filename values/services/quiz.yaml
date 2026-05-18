@@ -29,5 +29,3 @@ env:
     value: 0.0.0.0:8080
 
 resources: {}
-deployment:
-  enabled: true

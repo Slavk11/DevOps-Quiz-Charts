@@ -14,10 +14,6 @@ spec:
     metadata:
       labels:
         app: {{ $name }}
-      {{- with $dep.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
     spec:
       containers:
         - name: {{ $name }}
@@ -25,11 +21,13 @@ spec:
           imagePullPolicy: {{ $dep.image.pullPolicy }}
           ports:
             - containerPort: {{ $dep.containerPort }}
-          {{- with $dep.env }}
-          env: {{ toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with $dep.resources }}
-          resources: {{ toYaml . | nindent 12 }}
-          {{- end }}
+{{- with $dep.env }}
+          env:
+{{ toYaml . | nindent 12 }}
+{{- end }}
+{{- with $dep.resources }}
+          resources:
+{{ toYaml . | nindent 12 }}
+{{- end }}
 {{- end }}
 {{- end }}
