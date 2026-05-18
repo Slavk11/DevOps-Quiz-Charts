@@ -31,3 +31,5 @@ env:
     value: https://app.devops-quiz.com
 
 resources: {}
+deployment:
+  enabled: true

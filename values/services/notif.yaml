@@ -43,3 +43,5 @@ env:
     value: "https://mailprefs.hex-server.site"
 
 resources: {}
+deployment:
+  enabled: true

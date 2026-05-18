@@ -56,3 +56,5 @@ env:
         key: S3_SECRET_KEY
 
 resources: {}
+deployment:
+  enabled: true
