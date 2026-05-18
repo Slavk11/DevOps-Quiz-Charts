@@ -27,6 +27,9 @@ ingress:
 serviceAccount:
   create: true
 
+podAnnotations:
+  linkerd.io/inject: enabled
+
 env:
   - name: MICRO_SERVER_ADDRESS
     value: 0.0.0.0:8080
@@ -56,5 +59,9 @@ env:
         key: S3_SECRET_KEY
 
 resources: {}
+
 deployment:
   enabled: true
+
+healthcheck:
+  enabled: false
