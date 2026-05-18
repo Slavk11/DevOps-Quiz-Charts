@@ -1,0 +1,34 @@
+# show-canary — parent для HTTPRoute split'а между show-v1 и show-v2.
+# Содержит только Service и Ingress, без Deployment.
+# Service селектит поды show-v1 и show-v2 по общему label app=show (без version-фильтра),
+# поэтому при отказе HTTPRoute трафик пойдёт round-robin как fallback.
+
+appLabel: show
+
+image:
+  repository: cr.yandex/crpd87adl3oop0ieiuk7/show
+  tag: "v1"
+
+containerPort: 6050
+
+deployment:
+  enabled: false
+
+service:
+  enabled: true
+  type: ClusterIP
+  nameOverride: show
+  port: 80
+  targetPort: 6050
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  host: show.hex-server.site
+  path: /
+  pathType: Prefix
+  tls:
+    enabled: true
+    secretName: show-hex-server-site-tls
