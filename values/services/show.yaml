@@ -31,3 +31,5 @@ env:
     value: "hex-server.site"
 
 resources: {}
+deployment:
+  enabled: true
