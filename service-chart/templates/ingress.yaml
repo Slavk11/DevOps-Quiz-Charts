@@ -23,7 +23,7 @@ spec:
             pathType: {{ .Values.ingress.pathType }}
             backend:
               service:
-                name: {{ include "service-chart.fullname" . }}
+                name: {{ default (include "service-chart.fullname" .) .Values.service.nameOverride }}
                 port:
                   number: {{ .Values.service.port }}
 {{- end }}

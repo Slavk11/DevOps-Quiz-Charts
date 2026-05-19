@@ -1,16 +1,32 @@
+{{- if .Values.deployment.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "service-chart.fullname" . }}
+  labels:
+    app: {{ default (include "service-chart.fullname" .) .Values.appLabel }}
+    {{- with .Values.version }}
+    version: {{ . | quote }}
+    {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "service-chart.fullname" . }}
+      app: {{ default (include "service-chart.fullname" .) .Values.appLabel }}
+      {{- with .Values.version }}
+      version: {{ . | quote }}
+      {{- end }}
   template:
     metadata:
       labels:
-        app: {{ include "service-chart.fullname" . }}
+        app: {{ default (include "service-chart.fullname" .) .Values.appLabel }}
+        {{- with .Values.version }}
+        version: {{ . | quote }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       {{- if .Values.serviceAccount.create }}
       serviceAccountName: {{ include "service-chart.fullname" . }}
@@ -50,3 +66,4 @@ spec:
           {{- with .Values.resources }}
           resources: {{ toYaml . | nindent 12 }}
           {{- end }}
+{{- end }}

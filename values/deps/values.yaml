@@ -65,6 +65,9 @@ dependencies:
 
   microapi:
     enabled: true
+    podAnnotations:
+      linkerd.io/inject: enabled
+      config.linkerd.io/skip-outbound-ports: "4222"
     image:
       repository: cr.yandex/crpd87adl3oop0ieiuk7/microapi
       tag: "latest"
