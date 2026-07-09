@@ -1,98 +1,110 @@
 # DevOps-Quiz-Charts
 
 Helm charts for the [DevOps-Quiz](https://github.com/Slavk11/DevOps-Quiz)
-platform: an **umbrella chart** that deploys all 12 application services —
-9 Go microservices and 3 frontend apps — with one command.
+platform — built around **one universal service chart** instead of a dozen
+copy-pasted ones.
 
-```bash
-helm install devops-quiz ./umbrella -f values/prod.yaml
-```
+Two charts deploy the entire platform:
 
-> Cluster and cloud resources are provisioned by
-> [DevOps-Quiz-Terraform](https://github.com/Slavk11/DevOps-Quiz-Terraform);
-> in-cluster dependencies (CockroachDB, Redis, NATS, Consul, ingress) come from
-> [DevOps-Quiz-Infra](https://github.com/Slavk11/DevOps-Quiz-Infra).
-> This repo owns the **application layer** only.
+| Chart | Deploys |
+|---|---|
+| **`service-chart`** | Any platform service — the same templates, parameterized per service via values |
+| **`deps-chart`** | Platform dependencies |
+
+Every microservice differs only by its values file. Adding a new service to
+the platform means **adding one YAML file** — not writing a new chart.
 
 ## Structure
 
 ```
 .
-├── umbrella/                 # top-level chart: the whole platform
-│   ├── Chart.yaml            # lists all services as dependencies
-│   └── values.yaml           # cross-service defaults
-├── charts/
-│   ├── microapi/             # API gateway
-│   ├── quiz/                 # quiz domain service
-│   ├── leads/                # leads service
-│   ├── users/                # users service
-│   ├── notif/                # notifications
-│   ├── jobber/               # scheduled & background tasks
-│   ├── chrome/               # headless-chrome screenshots
-│   ├── show/                 # traffic routing + widget serving
-│   ├── uploader/             # file uploads
-│   ├── app/                  # React user account
-│   └── land/                 # Hugo promo site
+├── service-chart/            # universal application chart
+│   ├── templates/            # deployment, service, ingress, probes — one set for all
+│   ├── Chart.yaml
+│   └── values.yaml           # sane defaults every service inherits
+├── deps-chart/                # platform dependencies chart
+│   ├── templates/
+│   ├── Chart.yaml
+│   └── values.yaml
 └── values/
-    ├── prod.yaml             # production overrides
-    ├── dev.yaml              # dev environment
-    └── review.yaml           # template for dynamic review envs
+    ├── deps/
+    │   └── values.yaml       # dependency configuration
+    └── services/             # one file = one deployed service
+        ├── app.yaml          # React user account
+        ├── land.yaml         # Hugo promo site
+        ├── quiz.yaml
+        ├── leads.yaml
+        ├── users.yaml
+        ├── notif.yaml
+        ├── jobber.yaml
+        ├── uploader.yaml
+        ├── show.yaml         # traffic routing + widget serving
+        ├── show-v1.yaml      #   ├─ stable version
+        ├── show-v2.yaml      #   ├─ next version
+        └── show-canary.yaml  #   └─ canary — takes a slice of live traffic
 ```
 
-Each service chart follows the same conventions (image, resources, probes,
-service, ingress where applicable) — learning one chart means understanding
-all of them.
+## Deployment model
 
-## How deployment works
+Each service is its own Helm release from the shared chart:
 
-- **One release per environment.** `helm upgrade --install` of the umbrella
-  chart is the only deploy command; CI calls it with the right values file
-- **Per-environment values.** `prod` / `dev` / `review-*` differ only in
-  values: replicas, resources, domains, image tags — never in templates
-- **Review environments.** CI deploys the same umbrella chart into a
-  per-branch namespace with `review.yaml` + a generated domain
-  (`<branch>.devops-quiz.com`), then `helm uninstall` on merge
-- **Rollback.** `helm rollback` returns the previous application version;
-  DB migrations are written to be backward-compatible, so rolling back the
-  app never requires rolling back the schema
+```bash
+# any service — same chart, different values
+helm upgrade --install quiz  ./service-chart -f values/services/quiz.yaml
+helm upgrade --install leads ./service-chart -f values/services/leads.yaml
 
-## Conventions every chart follows
+# dependencies
+helm upgrade --install deps  ./deps-chart    -f values/deps/values.yaml
+```
+
+In practice these commands are executed by the
+[CI library](https://github.com/Slavk11/DevOps-Quiz-CI-Lib) — each service's
+pipeline deploys only its own release, so a release of `quiz` can never
+break the release state of `leads`.
+
+## Canary releases
+
+The `show` service handles live visitor traffic (it serves the embedded quiz
+widget), so it releases through a **canary flow** instead of a plain rollout:
+
+```
+show-v1 (stable) ──┐
+                   ├── traffic split ── users
+show-canary  ──────┘      │
+     ▲                    │ metrics look good?
+     └── show-v2 promoted ┘
+```
+
+- `show-v1` / `show-v2` — versioned releases running side by side
+- `show-canary` — receives a controlled slice of real traffic first
+- Promotion = shifting traffic, not redeploying; rollback = shifting it back,
+  which takes seconds and loses nothing
+
+The riskiest service in the platform is released in the safest way.
+
+## Conventions baked into service-chart
 
 | Concern | Convention |
 |---|---|
-| Probes | liveness + readiness for every service; startup probe for slow starters |
-| Resources | requests & limits set explicitly — no unbounded pods |
-| Config | env-specific config via values; secrets referenced, never stored |
-| Ingress | only `microapi`, `show`, `app`, `land` are exposed; the rest are cluster-internal |
-| Naming | one chart = one service = one image, named after the service |
+| Probes | liveness + readiness for every service |
+| Resources | requests & limits are explicit — no unbounded pods |
+| Config | per-service env via values; secrets referenced, never stored |
+| Exposure | only public-facing services get ingress; the rest stay cluster-internal |
 
-## Usage
-
-```bash
-# render manifests locally without installing
-helm template devops-quiz ./umbrella -f values/dev.yaml
-
-# dry-run against the cluster
-helm upgrade --install devops-quiz ./umbrella -f values/prod.yaml --dry-run
-
-# real deploy (what CI runs)
-helm upgrade --install devops-quiz ./umbrella -f values/prod.yaml --atomic --timeout 10m
-```
-
-`--atomic` rolls the release back automatically if any service fails to become
-ready — a half-deployed platform is never left behind.
+Because conventions live in the chart, no service can "forget" its probes or
+resource limits — the template simply enforces them.
 
 ## Design decisions
 
-- **Umbrella over 12 separate releases** — one versioned unit for the whole
-  platform: environments stay consistent, and "what's deployed" has a single
-  answer
-- **Values-only environment differences** — templates are identical across
-  environments, which makes review envs cheap and prod predictable
-- **Explicit exposure** — internal services aren't reachable from outside by
-  design; the attack surface is 4 endpoints, not 12
-- **Backward-compatible migrations as a contract** — this is what makes
-  `helm rollback` safe and zero-touch releases possible
+- **One chart, many values** — 12 services with zero template duplication;
+  a probe fix or a securityContext change lands in every service at once
+- **Release per service** — independent deploy and rollback per service,
+  matching the microservice ownership model
+- **Canary where it matters** — full canary machinery only for the
+  traffic-facing service; internal services use plain rolling updates.
+  Complexity is spent where the risk is
+- **Values as the single source of truth** — "how is `notif` configured?"
+  is answered by one file under `values/services/`
 
 ---
 
